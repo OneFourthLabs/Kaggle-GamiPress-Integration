@@ -2,20 +2,19 @@ import base64
 import json
 import requests
 
+from gamipress import GamipressKaggleScorer
+
 class Integrator:
     def __init__(self, config_json):
         with open(config_json) as f:
-            config = json.load(f)
+            self.config = json.load(f)
         
-        self.setup_wordpress(config)
+        self.setup_wordpress()
         self.setup_kaggle2wp_map()
-        
-        from kaggle import KaggleLeaderboard
-        self.kaggle_leaderboard = KaggleLeaderboard(config['kaggle']['competitions'])
     
-    def setup_wordpress(self, config):
-        self.wp_domain = config['wordpress']['site']
-        self.wp_credentials = config['wordpress']['api']['user'] + ':' + config['wordpress']['api']['password']
+    def setup_wordpress(self):
+        self.wp_domain = self.config['wordpress']['site']
+        self.wp_credentials = self.config['wordpress']['api']['user'] + ':' + self.config['wordpress']['api']['password']
         self.wp_token = base64.b64encode(self.wp_credentials.encode())
         self.wp_header = {'Authorization': 'Basic ' + self.wp_token.decode('utf-8')}
         return
@@ -50,5 +49,9 @@ class Integrator:
         
         return
     
+    def run_rewarder(self):
+        GamipressKaggleScorer(self.config).award_points()
+    
 if __name__ == '__main__':
-    print(Integrator('config.json').kaggle_leaderboard.competitions)
+    i = Integrator('config.json')
+    i.run_rewarder()

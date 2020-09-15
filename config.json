@@ -10,5 +10,15 @@
         "competitions": [
             "padhai-mp-neuron-like-unlike-classification"
         ]
+    },
+    "gamipress": {
+        "history_dump": "points_history.json",
+        "scores_to_points": [
+            [0.00, 1],
+            [0.25, 1],
+            [0.50, 1],
+            [0.75, 1],
+            [0.90, 1]
+        ]
     }
 }

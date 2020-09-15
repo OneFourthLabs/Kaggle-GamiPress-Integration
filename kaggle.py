@@ -36,7 +36,7 @@ class KaggleLeaderboard:
         for team in teams:
             team_data = {
                 'rank': team['rank'],
-                'score': team['score'],
+                'score': float(team['score']),
                 'entries': team['entries']
             }
             # Extract users
