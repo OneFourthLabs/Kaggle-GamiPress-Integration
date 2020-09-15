@@ -12,6 +12,7 @@ class GamipressKaggleScorer:
         else:
             self.history = None
         
+        # Assumes score thresholds in ascending order
         self.scores_to_points = config['gamipress']['scores_to_points']
         self.user2wp_id = kaggle2wp_id
         
@@ -33,12 +34,14 @@ class GamipressKaggleScorer:
         for user, user_data in current_data.items():
             score = user_data['score']
             prev_score = -1
-            if user in prev_data:
-                prev_score = prev_data[user]['score']
+            if user in prev_data and 'last_awarded_score' in prev_data[user]:
+                prev_score = prev_data[user]['last_awarded_score']
+                user_data['last_awarded_score'] = prev_score # Save for persistence
             
             for score_thresh, points in self.scores_to_points:
                 if score_thresh > prev_score and score >= score_thresh:
-                    self.award_points_to_user(user, points, competition_name, score_thresh)
+                    if self.award_points_to_user(user, points, competition_name, score_thresh):
+                        user_data['last_awarded_score'] = score
         
         return
     
@@ -48,24 +51,27 @@ class GamipressKaggleScorer:
             
             for score_thresh, points in self.scores_to_points:
                 if score >= score_thresh:
-                    self.award_points_to_user(user, points, competition_name, score_thresh)
+                    if self.award_points_to_user(user, points, competition_name, score_thresh):
+                        user_data['last_awarded_score'] = score
         return
 
     def award_points_to_user(self, kaggle_username, points, competition_name, score_thresh):
-        
         if kaggle_username not in self.user2wp_id:
             return False
         
-        return_code = True
-        # Award points for all culprits with that username
-        for user_id in self.user2wp_id[kaggle_username]:
-            params = {
-                'user_id': user_id,
-                'points': points,
-                'points_type': self.points_type,
-                'reason': 'Crossed score %.2f in competition: %s' % (score_thresh, competition_name)
-            }
-            r = requests.post(self.award_points_api, params=params, headers=self.api_header).json()
-            return_code = return_code and r['success']
+        # Do not award points for all culprits with that username
+        users = self.user2wp_id[kaggle_username]
+        if len(users) > 1:
+            print('WARN: Forgery detected. The Kaggle username %s is set by the user_ids:' % kaggle_username)
+            print(users)
+            return False
         
-        return return_code
+        params = {
+            'user_id': users[0],
+            'points': points,
+            'points_type': self.points_type,
+            'reason': 'Crossed score %.2f in competition: %s' % (score_thresh, competition_name)
+        }
+        r = requests.post(self.award_points_api, params=params, headers=self.api_header).json()
+        
+        return r['success']
