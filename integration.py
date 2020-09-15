@@ -13,10 +13,9 @@ class Integrator:
         self.setup_kaggle2wp_map()
     
     def setup_wordpress(self):
-        self.wp_domain = self.config['wordpress']['site']
-        self.wp_credentials = self.config['wordpress']['api']['user'] + ':' + self.config['wordpress']['api']['password']
-        self.wp_token = base64.b64encode(self.wp_credentials.encode())
-        self.wp_header = {'Authorization': 'Basic ' + self.wp_token.decode('utf-8')}
+        wp_credentials = self.config['wordpress']['api']['user'] + ':' + self.config['wordpress']['api']['password']
+        wp_token = base64.b64encode(wp_credentials.encode())
+        self.config['wordpress']['api']['header'] = {'Authorization': 'Basic ' + wp_token.decode('utf-8')}
         return
     
     def setup_kaggle2wp_map(self):
@@ -26,18 +25,18 @@ class Integrator:
         Ref: https://www.buddyboss.com/resources/api/#api-Members-GetBBMembers'''
         
         ## Find number of pages to read
-        bb_members_details_api = self.wp_domain + "/wp-json/buddyboss/v1/members/details"
-        r = requests.get(url=bb_members_details_api, headers=self.wp_header).json()
+        bb_members_details_api = self.config['wordpress']['site'] + "/wp-json/buddyboss/v1/members/details"
+        r = requests.get(url=bb_members_details_api, headers=self.config['wordpress']['api']['header']).json()
         
         users_per_page = 100
         total_pages = (r['tabs']['all']['count'] // users_per_page) + 1
         
         ## Read user details from each available page
-        bb_members_api = self.wp_domain + "/wp-json/buddyboss/v1/members?per_page=%d&page=%d"
+        bb_members_api = self.config['wordpress']['site'] + "/wp-json/buddyboss/v1/members?per_page=%d&page=%d"
         
         self.kaggle2wp_id = {}
         for page_num in range(total_pages):
-            r = requests.get(url=bb_members_api % (users_per_page, page_num+1), headers=self.wp_header)
+            r = requests.get(url=bb_members_api % (users_per_page, page_num+1), headers=self.config['wordpress']['api']['header'])
             for user in r.json():
                 kaggle_username = user['xprofile']['groups']['1']['fields']['4']['value']['raw']
                 if not kaggle_username:
@@ -50,8 +49,14 @@ class Integrator:
         return
     
     def run_rewarder(self):
-        GamipressKaggleScorer(self.config).award_points()
-    
-if __name__ == '__main__':
+        GamipressKaggleScorer(self.config, self.kaggle2wp_id).issue_rewards()
+
+
+def main():
     i = Integrator('config.json')
     i.run_rewarder()
+
+if __name__ == '__main__':
+    ## Just for Testing
+    main()
+    # TODO: Replace above with a scheduler

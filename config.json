@@ -13,6 +13,7 @@
     },
     "gamipress": {
         "history_dump": "points_history.json",
+        "points_type": "kaggle",
         "scores_to_points": [
             [0.00, 1],
             [0.25, 1],
