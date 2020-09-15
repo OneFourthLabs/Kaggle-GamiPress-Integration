@@ -9,6 +9,9 @@ class Integrator:
         
         self.setup_wordpress(config)
         self.setup_kaggle2wp_map()
+        
+        from kaggle import KaggleLeaderboard
+        self.kaggle_leaderboard = KaggleLeaderboard(config['kaggle']['competitions'])
     
     def setup_wordpress(self, config):
         self.wp_domain = config['wordpress']['site']
@@ -19,7 +22,9 @@ class Integrator:
     
     def setup_kaggle2wp_map(self):
         '''Uses BuddyBoss API to get list of all users
-        and extract the custom user field Kaggle ID'''
+        and extract the custom user field "Kaggle Username".
+        
+        Ref: https://www.buddyboss.com/resources/api/#api-Members-GetBBMembers'''
         
         ## Find number of pages to read
         bb_members_details_api = self.wp_domain + "/wp-json/buddyboss/v1/members/details"
@@ -27,7 +32,6 @@ class Integrator:
         
         users_per_page = 100
         total_pages = (r['tabs']['all']['count'] // users_per_page) + 1
-        
         
         ## Read user details from each available page
         bb_members_api = self.wp_domain + "/wp-json/buddyboss/v1/members?per_page=%d&page=%d"
@@ -47,4 +51,4 @@ class Integrator:
         return
     
 if __name__ == '__main__':
-    print(Integrator('config.json').kaggle2wp_id)
+    print(Integrator('config.json').kaggle_leaderboard.competitions)

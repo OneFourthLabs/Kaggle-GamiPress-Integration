@@ -5,5 +5,10 @@
             "user": "admin",
             "password": "ZMOs RKRF 0OE2 3Syh p8U7 atWX"
         }
+    },
+    "kaggle": {
+        "competitions": [
+            "padhai-mp-neuron-like-unlike-classification"
+        ]
     }
 }
