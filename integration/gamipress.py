@@ -1,6 +1,6 @@
 import os
 import requests
-from kaggle import KaggleLeaderboard
+from .kaggle import KaggleLeaderboard
 
 class GamipressKaggleScorer:
     def __init__(self, config, kaggle2wp_id):
@@ -23,18 +23,18 @@ class GamipressKaggleScorer:
     def issue_rewards(self):
         for competition, competition_data in self.kaggle_leaderboard.competitions.items():
             if self.history and competition in self.history.competitions:
-                self.award_points_for_progress(competition, competition_data, self.history.competitions[competition])
+                prev_competition_data = self.history.competitions[competition]
             else:
-                self.award_points_initial(competition, competition_data)
-        
+                prev_competition_data = None
+            self.award_points_for_progress(competition, competition_data, prev_competition_data)
         self.kaggle_leaderboard.dump_json(self.history_file)
         return
     
-    def award_points_for_progress(self, competition_name, current_data, prev_data):
+    def award_points_for_progress(self, competition_name, current_data, prev_data=None):
         for user, user_data in current_data.items():
             score = user_data['score']
             prev_score = -1
-            if user in prev_data and 'last_awarded_score' in prev_data[user]:
+            if prev_data and user in prev_data and 'last_awarded_score' in prev_data[user]:
                 prev_score = prev_data[user]['last_awarded_score']
                 user_data['last_awarded_score'] = prev_score # Save for persistence
             
@@ -43,16 +43,6 @@ class GamipressKaggleScorer:
                     if self.award_points_to_user(user, points, competition_name, score_thresh):
                         user_data['last_awarded_score'] = score
         
-        return
-    
-    def award_points_initial(self, competition_name, current_data):
-        for user, user_data in current_data.items():
-            score = user_data['score']
-            
-            for score_thresh, points in self.scores_to_points:
-                if score >= score_thresh:
-                    if self.award_points_to_user(user, points, competition_name, score_thresh):
-                        user_data['last_awarded_score'] = score
         return
 
     def award_points_to_user(self, kaggle_username, points, competition_name, score_thresh):

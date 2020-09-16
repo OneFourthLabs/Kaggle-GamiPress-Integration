@@ -2,7 +2,7 @@ import base64
 import json
 import requests
 
-from gamipress import GamipressKaggleScorer
+from .gamipress import GamipressKaggleScorer
 
 class Integrator:
     def __init__(self, config_json):
@@ -50,13 +50,3 @@ class Integrator:
     
     def run_rewarder(self):
         GamipressKaggleScorer(self.config, self.kaggle2wp_id).issue_rewards()
-
-
-def main():
-    i = Integrator('config.json')
-    i.run_rewarder()
-
-if __name__ == '__main__':
-    ## Just for Testing
-    main()
-    # TODO: Replace above with a scheduler
