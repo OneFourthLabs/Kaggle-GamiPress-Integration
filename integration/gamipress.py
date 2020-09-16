@@ -21,6 +21,11 @@ class GamipressKaggleScorer:
         self.points_type = config['gamipress']['points_type']
     
     def issue_rewards(self):
+        '''
+        Issue award points for all users in all competitions,
+        if any progress is made compared to the history.
+        '''
+        
         for competition, competition_data in self.kaggle_leaderboard.competitions.items():
             if self.history and competition in self.history.competitions:
                 prev_competition_data = self.history.competitions[competition]
@@ -31,6 +36,11 @@ class GamipressKaggleScorer:
         return
     
     def award_points_for_progress(self, competition_name, current_data, prev_data=None):
+        '''
+        Compare the history and current Kaggle scores in the given competition,
+        and award points accordingly as per the `scores_to_points` specification
+        '''
+        
         for user, user_data in current_data.items():
             score = user_data['score']
             prev_score = -1
@@ -46,6 +56,11 @@ class GamipressKaggleScorer:
         return
 
     def award_points_to_user(self, kaggle_username, points, competition_name, score_thresh):
+        '''
+        Calls the following API to award points to an user:
+        https://gamipress.com/docs/gamipress-rest-api-extended/points-extended-controller
+        '''
+        
         if kaggle_username not in self.user2wp_id:
             return False
         
