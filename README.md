@@ -22,3 +22,5 @@
 
 - Works only for score types: Accuracy
 - The `score_threshold` and correspoding reward points can be found as pairs in `scores_to_points` field of the config.
+- Currently, the awarded points get added directly only to the user's balance.
+  - To also register the awarded points as user earnings, [add this PHP hook](https://wordpress.org/support/topic/api-to-award-points-by-adding-to-user-earnings-and-balance/) to WordPress using the [Code Snippets](https://wordpress.org/plugins/code-snippets/) plugin.
