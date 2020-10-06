@@ -9,6 +9,7 @@ class Integrator:
         with open(config_json) as f:
             self.config = json.load(f)
         
+        print('Reading data from WordPress...')
         self.setup_wordpress()
         self.setup_kaggle2wp_map()
     

@@ -7,27 +7,60 @@
         }
     },
     "kaggle": {
-        "competitions": [
-            "padhai-mp-neuron-like-unlike-classification",
-            "padhai-perceptron-like-unlike-classification",
-            "padhai-text-non-text-classification-level-1",
-            "padhai-text-non-text-classification-level-2",
-            "padhai-text-non-text-classification-level-3",
-            "padhai-text-non-text-classification-level-4a",
-            "padhai-text-non-text-classification-level-4b",
-            "padhai-hindi-vow-cons-classification",
-            "padhai-tamil-vow-cons-classification"
-        ]
+        "competitions": {
+            "padhai-mp-neuron-like-unlike-classification": {
+                "difficulty": "EASY"
+            },
+            "padhai-perceptron-like-unlike-classification": {
+                "difficulty": "EASY"
+            },
+            "padhai-text-non-text-classification-level-1": {
+                "difficulty": "EASY"
+            },
+            "padhai-text-non-text-classification-level-2": {
+                "difficulty": "EASY"
+            },
+            "padhai-text-non-text-classification-level-3": {
+                "difficulty": "MEDIUM"
+            },
+            "padhai-text-non-text-classification-level-4a": {
+                "difficulty": "MEDIUM"
+            },
+            "padhai-text-non-text-classification-level-4b": {
+                "difficulty": "MEDIUM"
+            },
+            "padhai-hindi-vow-cons-classification": {
+                "difficulty": "HARD"
+            },
+            "padhai-tamil-vow-cons-classification": {
+                "difficulty": "HARD"
+            }
+        }
     },
     "gamipress": {
         "history_dump": "points_history.json",
         "points_type": "kaggle",
-        "scores_to_points": [
-            [0.00, 1],
-            [0.25, 1],
-            [0.50, 1],
-            [0.75, 1],
-            [0.90, 1]
-        ]
+        "scores_to_points": {
+            "EASY": [
+                [0.00, 1],
+                [0.50, 1],
+                [0.90, 1]
+            ],
+            "MEDIUM": [
+                [0.00, 1],
+                [0.25, 1],
+                [0.50, 1],
+                [0.75, 1],
+                [0.90, 1]
+            ],
+            "HARD": [
+                [0.00, 1],
+                [0.25, 1],
+                [0.50, 1],
+                [0.70, 1],
+                [0.80, 2],
+                [0.90, 1]
+            ]
+        }
     }
 }

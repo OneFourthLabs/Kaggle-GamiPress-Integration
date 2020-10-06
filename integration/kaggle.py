@@ -4,16 +4,13 @@ import requests
 LEADERBOARD_API = 'https://www.kaggle.com/c/%s/leaderboard.json?includeBeforeUser=true&includeAfterUser=false'
 
 class KaggleLeaderboard:
-    def __init__(self, competitions_list, call_api=True):
+    def __init__(self, competitions, call_api=True):
         if call_api:
             # For each competition, retrieve data from API
-            self.competitions = {}
-            for competition in competitions_list:
-                user_data = self.get_users_in_leaderboards(competition)
-                self.competitions[competition] = user_data
-        else:
-            # Just use the dump which is passed
-            self.competitions = competitions_list
+            for competition in competitions:
+                competitions[competition]['user_data'] = self.get_users_in_leaderboards(competition)
+        # else: # Just use the dump which is passed
+        self.competitions = competitions
     
     def dump_json(self, write_to):
         with open(write_to, 'w', encoding='utf-8') as f:
